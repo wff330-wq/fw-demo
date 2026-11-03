@@ -9,6 +9,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="廚餘平台">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
 <title>廚餘管理平台 · Food Waste Platform</title>
 <style>
 :root{
@@ -603,6 +607,7 @@ function topbar(){
     '<div class="who"><strong>'+esc(title)+'</strong><span>'+role+'</span></div>'+
     '<div class="spacer"></div>'+
     '<span class="pill pill-grey" style="font-size:10.5px;letter-spacing:.06em">'+t("demoBadge")+'</span>'+
+    '<button class="btn btn-ghost btn-sm hide" id="installBtn" data-act="install">'+(lang === "zh" ? "安裝" : "Install")+'</button>'+
     '<button class="btn btn-ghost btn-sm" data-act="lang">'+(lang === "zh" ? "EN" : "繁")+'</button>'+
     '<button class="btn btn-ghost btn-sm" data-act="logout">'+t("logout")+'</button>'+
   '</div></header>';
@@ -839,11 +844,48 @@ function renderApp(){
       drawStackedBars(host, series, weekly);
     }
   }
+  syncInstallBtn();
 }
 
 function currentList(){
   return supplierRecords(state.sid, state.from, state.to);
 }
+
+/* =========================================================
+   8b. PWA install
+   ========================================================= */
+let deferredPrompt = null;
+
+function isStandalone(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+
+function syncInstallBtn(){
+  const btn = document.getElementById("installBtn");
+  if (!btn) return;
+  if (deferredPrompt && !isStandalone()) btn.classList.remove("hide");
+  else btn.classList.add("hide");
+}
+
+function promptInstall(){
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function () {
+    deferredPrompt = null;
+    syncInstallBtn();
+  });
+}
+
+window.addEventListener("beforeinstallprompt", function (e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  syncInstallBtn();
+});
+
+window.addEventListener("appinstalled", function () {
+  deferredPrompt = null;
+  syncInstallBtn();
+});
 
 /* =========================================================
    9. actions
@@ -912,6 +954,7 @@ app.addEventListener("click", function(e){
   if (act === "print"){ window.print(); return; }
   if (act === "prev"){ go(-1); return; }
   if (act === "next"){ go(1); return; }
+  if (act === "install"){ promptInstall(); return; }
 });
 
 let rsz;
@@ -925,7 +968,18 @@ window.addEventListener("resize", function(){
    ========================================================= */
 document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
 document.title = (lang === "zh" ? "廚餘管理平台" : "Food Waste Platform") + " · Demo";
-renderLogin();
+
+// PWA: register the service worker and handle manifest shortcuts (?view=...)
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js").catch(function () {});
+  });
+}
+
+const view = new URLSearchParams(location.search).get("view");
+if (view === "admin"){ state.role = "admin"; setPreset("d30"); }
+else if (view === "supplier"){ state.role = "supplier"; state.sid = 1; setPreset("d30"); }
+else { renderLogin(); }
 
 })();
 </script>

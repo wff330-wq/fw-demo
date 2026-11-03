@@ -2,6 +2,8 @@
 
 單一 HTML 檔，無需安裝、無需網絡、無需後端。用手機瀏覽器開同樣可以（自動 responsive）。
 
+**係 PWA**：有 `manifest.webmanifest` + service worker，可「加到主畫面」以全螢幕 App 模式開啟，**斷網照開得**（app shell 已預先快取）。
+
 **示範數據**：畫面所有數字皆為模擬資料，不代表任何真實機構。
 
 ---
@@ -62,5 +64,11 @@
 ## 檔案
 
 ```
-index.html    HTML + CSS + JS + 模擬數據（單一檔案，離線可用）
+index.html            HTML + CSS + JS + 模擬數據（單一檔案，離線可用）
+manifest.webmanifest  PWA manifest（名稱、圖示、standalone 顯示、捷徑）
+sw.js                 service worker（app shell 快取，離線可開）
+icon-192/512.png      PWA 圖示
+icon-maskable-512.png Android adaptive icon
+apple-touch-icon.png  iOS 主畫面圖示
+robots.txt            禁止索引
 ```
