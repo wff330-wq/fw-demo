@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d7a63">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="廚餘平台">
+<title>廚餘管理平台 · Food Waste Platform</title>
+<style>
+:root{
+  --bg:#f2f6f5;
+  --surface:#ffffff;
+  --ink:#0e1a19;
+  --muted:#64777a;
+  --faint:#8a9a9c;
+  --line:#e2eaea;
+  --line-2:#eef3f2;
+  --primary:#0d7a63;
+  --primary-600:#0a5f4d;
+  --primary-50:#e7f4f0;
+  --amber:#a86a06;
+  --amber-bg:#fdf4e5;
+  --red:#bd3b2c;
+  --red-bg:#fdeeec;
+  --shadow:0 1px 2px rgba(14,26,25,.05), 0 10px 28px -16px rgba(14,26,25,.28);
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei","Noto Sans TC","Helvetica Neue",Arial,sans-serif;
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0;font-weight:650;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select{font:inherit;color:inherit}
+table{border-collapse:collapse;width:100%}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.hide{display:none !important}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;justify-content:center;
+  height:38px;padding:0 15px;border-radius:10px;font-size:14px;font-weight:600;
+  border:1px solid transparent;transition:background .15s,border-color .15s,transform .06s;
+  white-space:nowrap;
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-600)}
+.btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--line-2)}
+.btn-sm{height:32px;padding:0 11px;font-size:13px;border-radius:9px}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ---------- login ---------- */
+.auth{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:28px 20px;
+  background:
+    radial-gradient(900px 480px at 12% -10%, #dcefe8 0%, transparent 62%),
+    radial-gradient(760px 420px at 96% 108%, #e4f1ec 0%, transparent 58%),
+    var(--bg);
+}
+.auth-card{
+  width:100%;max-width:396px;background:var(--surface);border:1px solid var(--line);
+  border-radius:20px;padding:30px 26px 24px;box-shadow:var(--shadow);
+}
+.brand{display:flex;align-items:center;gap:11px;margin-bottom:22px}
+.brand-mark{width:38px;height:38px;flex:none;border-radius:11px;background:var(--primary);display:grid;place-items:center}
+.brand-name{font-size:15px;font-weight:700;line-height:1.25}
+.brand-sub{font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.input{
+  width:100%;height:42px;padding:0 13px;border-radius:10px;border:1px solid var(--line);
+  background:#fbfdfc;outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-50);background:#fff}
+.input-row{display:flex;gap:8px}
+.input-row .input{flex:1;min-width:0}
+.divider{display:flex;align-items:center;gap:12px;margin:17px 0;color:var(--faint);font-size:12px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.tiny{font-size:11.5px;color:var(--faint);line-height:1.5;margin:14px 0 0;text-align:center}
+.link{color:var(--primary);font-weight:600;text-decoration:none;font-size:13.5px}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+}
+.topbar-in{display:flex;align-items:center;gap:12px;height:60px}
+.who{min-width:0}
+.who strong{display:block;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{display:block;font-size:11.5px;color:var(--muted)}
+.spacer{flex:1}
+.pill{
+  display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:999px;
+  font-size:12px;font-weight:600;background:var(--primary-50);color:var(--primary-600);
+}
+.pill-amber{background:var(--amber-bg);color:var(--amber)}
+.pill-red{background:var(--red-bg);color:var(--red)}
+.pill-grey{background:#eef1f1;color:var(--muted)}
+
+/* ---------- layout ---------- */
+main{padding:22px 0 40px}
+.page-head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.page-head h1{font-size:21px;line-height:1.25}
+.page-head p{margin:3px 0 0;font-size:13px;color:var(--muted)}
+
+.grid{display:grid;gap:13px}
+.grid-kpi{grid-template-columns:repeat(4,1fr)}
+@media(max-width:820px){.grid-kpi{grid-template-columns:repeat(2,1fr)}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 1px rgba(14,26,25,.03)}
+.kpi{padding:15px 16px 14px}
+.kpi .label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.01em}
+.kpi .value{font-size:25px;font-weight:700;letter-spacing:-.02em;margin-top:5px;font-variant-numeric:tabular-nums}
+.kpi .value small{font-size:12.5px;font-weight:600;color:var(--muted);margin-left:3px;letter-spacing:0}
+.kpi .foot{font-size:11.5px;color:var(--faint);margin-top:3px}
+.delta{margin-top:5px;font-size:12px;font-weight:650;display:inline-flex;align-items:center;gap:4px}
+.delta.up{color:var(--red)}
+.delta.down{color:var(--primary)}
+.delta.flat{color:var(--muted)}
+
+/* ---------- filter bar ---------- */
+.filters{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  padding:12px;margin:14px 0;
+}
+.seg{display:inline-flex;background:#eef2f1;border-radius:10px;padding:3px;gap:2px}
+.seg button{height:30px;padding:0 12px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(14,26,25,.12)}
+.date-in{height:34px;border:1px solid var(--line);border-radius:9px;padding:0 10px;background:#fbfdfc;font-size:13px}
+.filters .sep{width:1px;height:22px;background:var(--line)}
+.grow{flex:1}
+
+/* ---------- chart ---------- */
+.card-pad{padding:17px 18px}
+.card-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.card-head h2{font-size:15px}
+.card-head .sub{font-size:12px;color:var(--muted)}
+.legend{display:flex;gap:13px;flex-wrap:wrap;margin-left:auto}
+.legend span{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);font-weight:600}
+.dot{width:8px;height:8px;border-radius:2.5px;display:inline-block}
+.chart{margin-top:10px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:inherit}
+
+/* ---------- table ---------- */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{min-width:760px;font-size:13px}
+thead th{
+  text-align:left;font-size:11.5px;font-weight:650;color:var(--muted);letter-spacing:.03em;
+  padding:10px 12px;border-bottom:1px solid var(--line);background:#fafcfc;white-space:nowrap;
+}
+tbody td{padding:11px 12px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+tbody tr:hover{background:#fbfdfc}
+tbody tr:last-child td{border-bottom:0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.mono{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+.pager{display:flex;align-items:center;gap:10px;padding:12px 14px;border-top:1px solid var(--line-2);flex-wrap:wrap}
+.pager .info{font-size:12px;color:var(--muted)}
+.pager .grow{flex:1}
+
+.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13.5px}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);margin-top:10px;padding:18px 0 26px}
+.foot-in{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:var(--faint)}
+.foot-in .spacer{flex:1}
+.clause{display:inline-flex;align-items:center;gap:6px;background:var(--primary-50);color:var(--primary-600);padding:4px 10px;border-radius:999px;font-weight:650;font-size:11px}
+
+@media(max-width:640px){
+  .wrap{padding:0 15px}
+  .topbar-in{height:56px;gap:9px}
+  .page-head h1{font-size:18px}
+  .kpi .value{font-size:21px}
+  .filters{padding:10px}
+  .filters .sep{display:none}
+  .card-pad{padding:14px}
+  .date-in{width:132px}
+}
+@media print{
+  .no-print{display:none !important}
+  body{background:#fff}
+  .card{box-shadow:none;break-inside:avoid}
+  .table-wrap{overflow:visible}
+  table{min-width:0;font-size:11px}
+  thead th,tbody td{padding:6px 7px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   1. i18n
+   ========================================================= */
+const I18N = {
+  zh: {
+    appName:"廚餘管理平台", org:"Food Waste Collection Service", tagline:"示範平台",
+    demoBadge:"示範",
+    loginTitle:"供應商登入", loginSub:"查閱 貴司於指定期間的廚餘收集紀錄",
+    phoneLabel:"手機號碼", codeLabel:"驗證碼", getCode:"取得驗證碼", loginBtn:"登入",
+    orDivider:"或", adminDemo:"以監察實體身份查看 →", forgot:"首次使用？請聯絡項目管理處開通帳號",
+    demoNote:"示範系統 · 畫面上所有數據均為模擬資料，不代表任何真實機構。",
+    roleSupplier:"廚餘供應商", roleAdmin:"監察實體", logout:"登出",
+
+    kTotal:"本期收集總量", kTotalUnit:"kg",
+    kDaily:"日均收集量", kCollections:"收集次數", kPending:"待簽收紀錄",
+    kAvgPer:"平均每次", kRecords:"筆", kVsPrev:"較上期", kOfSuppliers:"個供應商", perDay:"每日",
+    kMonth:"本期總量", kSubmitted:"已簽收率",
+
+    period:"期間", pThisMonth:"本月", pLastMonth:"上月", p7:"近 7 日", p30:"近 30 日", pCustom:"自訂",
+    from:"由", to:"至", apply:"套用", exportCsv:"匯出 CSV", print:"列印 / PDF",
+
+    chartTitle:"每日廚餘收集量", chartSub:"按類別分佈",
+    legFood:"廚餘", legOil:"廢食油", legOther:"其他有機廢物",
+    adminChartTitle:"各供應商本期收集量", adminChartSub:"按總量排序（前 10 位）",
+
+    tableTitle:"收集紀錄明細", tableSub:"可匯出作存檔或審核之用",
+    colDate:"日期", colTime:"時間", colPoint:"收集點", colCat:"類別", colWeight:"重量 (kg)",
+    colVehicle:"收集車輛", colFacility:"處理設施", colStatus:"狀態", colRef:"紀錄編號",
+    colSupplier:"供應商", colDistrict:"區域", colThisMonth:"本期 (kg)", colPrev:"上期 (kg)",
+    colChange:"變化", colLast:"最後收集", colSuppliers:"供應商數目", colLicence:"牌照 / 登記編號",
+
+    stSigned:"已簽收", stPending:"待簽收", stMissing:"無紀錄",
+    catFood:"廚餘", catOil:"廢食油", catOther:"其他",
+
+    prev:"上一頁", next:"下一頁", showing:"顯示第 {a}–{b} 項，共 {n} 項",
+    empty:"此期間沒有紀錄", emptyHint:"試試擴大日期範圍。",
+
+    footerClause:"H5 跨端交付方案 · 示範",
+    footerNote:"示範版本 · 模擬數據",
+    footerBuilt:"H5 跨端方案 · 無需安裝",
+
+    adminTitle:"監察實體總覽", adminSub:"全體供應商廚餘收集狀況", adminTableTitle:"供應商本期摘要",
+    supTitle:"我的廚餘紀錄", supSub:"可自選任何期間查閱",
+    signedRate:"簽收率", noRecord:"近 7 日無收集紀錄"
+  },
+  en: {
+    appName:"Food Waste Platform", org:"廚餘管理平台", tagline:"Demonstration build",
+    demoBadge:"DEMO",
+    loginTitle:"Supplier sign in", loginSub:"Review your food waste collection records for any period",
+    phoneLabel:"Mobile number", codeLabel:"Verification code", getCode:"Send code", loginBtn:"Sign in",
+    orDivider:"or", adminDemo:"View as monitoring entity →", forgot:"First time here? Ask the project office to activate your account",
+    demoNote:"Demonstration system · all figures shown are simulated and do not represent any real organisation.",
+    roleSupplier:"Food waste supplier", roleAdmin:"Monitoring entity", logout:"Sign out",
+
+    kTotal:"Total collected", kTotalUnit:"kg",
+    kDaily:"Daily average", kCollections:"Collections", kPending:"Unsigned records",
+    kAvgPer:"Per collection", kRecords:"records", kVsPrev:"vs previous", kOfSuppliers:"suppliers", perDay:"per day",
+    kMonth:"Total this period", kSubmitted:"Signed rate",
+
+    period:"Period", pThisMonth:"This month", pLastMonth:"Last month", p7:"Last 7 days", p30:"Last 30 days", pCustom:"Custom",
+    from:"From", to:"To", apply:"Apply", exportCsv:"Export CSV", print:"Print / PDF",
+
+    chartTitle:"Daily food waste collected", chartSub:"By category",
+    legFood:"Food waste", legOil:"Waste oil", legOther:"Other organics",
+    adminChartTitle:"Collection by supplier", adminChartSub:"Ranked by total (top 10)",
+
+    tableTitle:"Collection records", tableSub:"Exportable for filing or audit",
+    colDate:"Date", colTime:"Time", colPoint:"Collection point", colCat:"Category", colWeight:"Weight (kg)",
+    colVehicle:"Vehicle", colFacility:"Facility", colStatus:"Status", colRef:"Record ref.",
+    colSupplier:"Supplier", colDistrict:"District", colThisMonth:"This period (kg)", colPrev:"Previous (kg)",
+    colChange:"Change", colLast:"Last collection", colSuppliers:"Suppliers", colLicence:"Licence / reg. no.",
+
+    stSigned:"Signed", stPending:"Pending", stMissing:"No record",
+    catFood:"Food waste", catOil:"Waste oil", catOther:"Other",
+
+    prev:"Previous", next:"Next", showing:"Showing {a}–{b} of {n}",
+    empty:"No records in this period", emptyHint:"Try widening the date range.",
+
+    footerClause:"H5 delivery approach · demonstration",
+    footerNote:"Demonstration build · simulated data",
+    footerBuilt:"Cross-platform H5 · nothing to install",
+
+    adminTitle:"Monitoring overview", adminSub:"Food waste collection across all suppliers", adminTableTitle:"Supplier summary",
+    supTitle:"My food waste records", supSub:"Any period you choose",
+    signedRate:"Signed rate", noRecord:"No collection in the last 7 days"
+  }
+};
+
+let lang = "zh";
+try { lang = localStorage.getItem("fw_lang") || "zh"; } catch (e) { lang = "zh"; }
+function t(k, vars){
+  let s = (I18N[lang] && I18N[lang][k]) || I18N.zh[k] || k;
+  if (vars) for (const key in vars) s = s.replace("{"+key+"}", vars[key]);
+  return s;
+}
+
+/* =========================================================
+   2. utilities
+   ========================================================= */
+const DAY = 86400000;
+function addDays(d, n){ const x = new Date(d.getTime()); x.setDate(x.getDate()+n); return x; }
+function startOfDay(d){ const x = new Date(d.getTime()); x.setHours(0,0,0,0); return x; }
+function startOfMonth(d){ const x = startOfDay(d); x.setDate(1); return x; }
+function endOfMonth(d){ const x = startOfMonth(d); x.setMonth(x.getMonth()+1); return addDays(x,-1); }
+function iso(d){
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  return d.getFullYear()+"-"+m+"-"+dd;
+}
+function parseIso(s){ const p = s.split("-").map(Number); return new Date(p[0], p[1]-1, p[2]); }
+function fmtZh(d){ return lang==="zh" ? (d.getMonth()+1)+"月"+d.getDate()+"日" : d.toLocaleDateString("en-GB",{day:"2-digit",month:"short"}); }
+function num(n){ return Math.round(n).toLocaleString("en-US"); }
+function pct(n){ return (n>0?"+":"") + n.toFixed(1) + "%"; }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* =========================================================
+   3. mock data
+   ========================================================= */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const rnd = mulberry32(20261103);
+
+const TODAY = startOfDay(new Date());
+const HISTORY_DAYS = 200;
+
+const SUPPLIERS = [
+  {id:1, zh:"金輝餐飲集團有限公司", en:"Kam Fai Catering Group Ltd.", licence:"FW-2024-0017", district:"澳門半島", scale:158, freq:.86, points:["中央廚房","員工餐廳","宴會廳出品部"]},
+  {id:2, zh:"海灣酒店餐飲部",       en:"Bayview Hotel F&B",             licence:"FW-2024-0023", district:"澳門半島", scale:236, freq:.80, points:["酒店主廚房","西餐廳","宴會廚房"]},
+  {id:3, zh:"恆豐食品加工廠",       en:"Hang Fung Food Processing",     licence:"FW-2024-0031", district:"氹仔",   scale:312, freq:.92, points:["加工線 A","加工線 B","冷藏庫"]},
+  {id:4, zh:"新口岸食肆集團",       en:"New Port Restaurants Group",    licence:"FW-2024-0044", district:"澳門半島", scale:96,  freq:.78, points:["門店 1","門店 2"]},
+  {id:5, zh:"氹仔中央廚房",         en:"Taipa Central Kitchen",         licence:"FW-2024-0052", district:"氹仔",   scale:187, freq:.88, points:["主廚房","備餐區"]},
+  {id:6, zh:"聯發凍肉食品",         en:"Luen Fat Frozen Foods",         licence:"FW-2024-0066", district:"路環",   scale:64,  freq:.62, points:["凍庫","分切區"]},
+  {id:7, zh:"葡韻餐廳",             en:"Porto Rhythm Restaurant",       licence:"FW-2024-0071", district:"澳門半島", scale:41,  freq:.55, points:["主廚房"]},
+  {id:8, zh:"東亞酒店集團",         en:"East Asia Hotels Group",        licence:"FW-2024-0080", district:"路氹城", scale:268, freq:.90, points:["A 座廚房","B 座廚房","自助餐區"]},
+  {id:9, zh:"好味來連鎖快餐",       en:"Ho Mei Loi Fast Food",          licence:"FW-2024-0095", district:"澳門半島", scale:78,  freq:.72, points:["分店 1","分店 2","分店 3"]},
+  {id:10,zh:"南灣美食廣場",         en:"Nam Van Food Court",            licence:"FW-2024-0102", district:"澳門半島", scale:122, freq:.74, points:["美食廣場"]},
+  {id:11,zh:"銀禧食品供應",         en:"Yan Hei Food Supply",           licence:"FW-2024-0118", district:"氹仔",   scale:55,  freq:.58, points:["倉庫","配送中心"]},
+  {id:12,zh:"氹仔漁村酒家",         en:"Taipa Fishing Village Restaurant", licence:"FW-2024-0126", district:"氹仔", scale:69, freq:.64, points:["主廚房","海鮮處理區"]}
+];
+
+const CATS = ["food","oil","other"];
+const CAT_W = [0.74, 0.16, 0.10];
+
+const VEHICLES = ["MW-41-22","MW-58-07","MW-33-91","MW-70-16","MW-19-84"];
+const FACILITIES = [
+  {zh:"澳門有機資源回收中心", en:"Macau Organic Resources Recovery Centre"},
+  {zh:"氹仔廚餘處理站",       en:"Taipa Food Waste Station"},
+  {zh:"路環資源再生中心",     en:"Coloane Recycling Centre"}
+];
+
+const RECORDS = [];
+let refSeq = 1;
+SUPPLIERS.forEach(function(s){
+  for (let d = HISTORY_DAYS; d >= 0; d--){
+    if (rnd() > s.freq) continue;
+    const date = addDays(TODAY, -d);
+    const weekday = date.getDay();
+    const weekendFactor = (weekday === 0 || weekday === 6) ? 0.72 : 1;
+    const n = 1 + Math.floor(rnd() * 2.2);
+    for (let k = 0; k < n; k++){
+      const r = rnd();
+      let ci = 0, acc = 0, cat = "food";
+      for (let i = 0; i < CATS.length; i++){ acc += CAT_W[i]; if (r <= acc){ cat = CATS[i]; ci = i; break; } }
+      const catFactor = cat === "food" ? 1 : cat === "oil" ? 0.26 : 0.14;
+      const noise = 0.62 + rnd() * 0.82;
+      let w = s.scale * weekendFactor * catFactor * noise / n;
+      w = Math.max(6, Math.round(w));
+      const hour = 9 + Math.floor(rnd() * 11);
+      const minute = Math.floor(rnd() * 60);
+      const pending = d <= 3 && rnd() < 0.34;
+      const fac = FACILITIES[Math.floor(rnd() * FACILITIES.length)];
+      RECORDS.push({
+        id: "FW-" + date.getFullYear() + "-" + String(refSeq++).padStart(5,"0"),
+        sid: s.id,
+        date: date,
+        hh: hour, mm: minute,
+        cat: cat,
+        w: w,
+        point: s.points[Math.floor(rnd() * s.points.length)],
+        vehicle: VEHICLES[Math.floor(rnd() * VEHICLES.length)],
+        facility: fac,
+        signed: !pending
+      });
+    }
+  }
+});
+RECORDS.sort(function(a,b){ return b.date - a.date || b.hh - a.hh; });
+
+/* =========================================================
+   4. selectors
+   ========================================================= */
+function inRange(d, from, to){
+  const x = d.getTime();
+  return x >= from.getTime() && x <= to.getTime();
+}
+function supplierRecords(sid, from, to){
+  return RECORDS.filter(function(r){
+    return (sid === null || r.sid === sid) && inRange(r.date, from, to);
+  });
+}
+function sums(list){
+  const o = {total:0, food:0, oil:0, other:0, pending:0, count:list.length};
+  list.forEach(function(r){
+    o.total += r.w;
+    o[r.cat] += r.w;
+    if (!r.signed) o.pending++;
+  });
+  return o;
+}
+function dailySeries(list, from, to){
+  const map = new Map();
+  for (let d = new Date(from); d <= to; d = addDays(d,1)){
+    map.set(iso(d), {total:0, food:0, oil:0, other:0});
+  }
+  list.forEach(function(r){
+    const key = iso(r.date);
+    const e = map.get(key);
+    if (!e) return;
+    e.total += r.w; e[r.cat] += r.w;
+  });
+  return Array.from(map.entries()).map(function(e){ return {date:e[0], v:e[1]}; });
+}
+function aggregateWeekly(series){
+  const out = [];
+  for (let i = 0; i < series.length; i += 7){
+    const chunk = series.slice(i, i+7);
+    const v = {total:0, food:0, oil:0, other:0};
+    chunk.forEach(function(c){ v.total+=c.v.total; v.food+=c.v.food; v.oil+=c.v.oil; v.other+=c.v.other; });
+    out.push({date:chunk[0].date, v:v, span:chunk.length});
+  }
+  return out;
+}
+function lastCollection(sid){
+  for (let i = 0; i < RECORDS.length; i++) if (RECORDS[i].sid === sid) return RECORDS[i].date;
+  return null;
+}
+
+/* =========================================================
+   5. state
+   ========================================================= */
+const state = {
+  role: null,
+  sid: 1,
+  from: addDays(TODAY, -29),
+  to: TODAY,
+  preset: "d30",
+  page: 1,
+  pageSize: 12
+};
+
+/* =========================================================
+   6. charts
+   ========================================================= */
+function niceMax(v){
+  if (v <= 0) return 10;
+  const mag = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v / mag;
+  const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 5 ? 5 : 10;
+  return step * mag;
+}
+
+function drawStackedBars(host, series, weekly){
+  const W = Math.max(320, host.clientWidth || 640);
+  const H = 250;
+  const padL = 46, padR = 10, padT = 14, padB = 30;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const max = niceMax(Math.max.apply(null, series.map(function(s){ return s.v.total; }).concat([1])));
+  const n = series.length || 1;
+  const bw = Math.max(2, Math.min(34, (iw / n) * 0.62));
+  const gap = iw / n;
+
+  const C = {food:"#0d7a63", oil:"#3fa58c", other:"#a9cabd"};
+  let s = '<svg viewBox="0 0 '+W+' '+H+'" role="img">';
+
+  for (let i = 0; i <= 5; i++){
+    const y = padT + ih - (ih * i / 5);
+    const val = max * i / 5;
+    s += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+y.toFixed(1)+'" stroke="#eef3f2" stroke-width="1"/>';
+    s += '<text x="'+(padL-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end" font-size="10.5" fill="#8a9a9c">'+num(val)+'</text>';
+  }
+
+  const labelEvery = Math.ceil(n / (W < 520 ? 6 : 12));
+  series.forEach(function(pt, i){
+    const x = padL + gap * i + (gap - bw) / 2;
+    let yBottom = padT + ih;
+    ["food","oil","other"].forEach(function(cat){
+      const val = pt.v[cat];
+      if (!val) return;
+      const h = (val / max) * ih;
+      yBottom -= h;
+      s += '<rect x="'+x.toFixed(1)+'" y="'+yBottom.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" fill="'+C[cat]+'" rx="1.5"><title>'+esc(pt.date)+' · '+num(val)+' kg</title></rect>';
+    });
+    if (i % labelEvery === 0){
+      const d = parseIso(pt.date);
+      const lbl = weekly ? fmtZh(d) : (d.getDate() + (lang==="zh" ? "日" : ""));
+      s += '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="10" fill="#8a9a9c">'+esc(lbl)+'</text>';
+    }
+  });
+
+  s += '<line x1="'+padL+'" y1="'+(padT+ih)+'" x2="'+(W-padR)+'" y2="'+(padT+ih)+'" stroke="#dfe8e6" stroke-width="1"/>';
+  s += '</svg>';
+  host.innerHTML = s;
+}
+
+function drawHorizontalBars(host, items){
+  const W = Math.max(320, host.clientWidth || 640);
+  const rowH = 30, padT = 6, padB = 6;
+  const labelW = W < 520 ? 120 : 200;
+  const valueW = 62;
+  const H = padT + padB + items.length * rowH;
+  const max = niceMax(Math.max.apply(null, items.map(function(i){ return i.value; }).concat([1])));
+  const barMax = W - labelW - valueW - 16;
+
+  let s = '<svg viewBox="0 0 '+W+' '+H+'" role="img">';
+  items.forEach(function(it, i){
+    const y = padT + i * rowH;
+    const bh = 16;
+    const bw = Math.max(2, (it.value / max) * barMax);
+    const label = it.label.length > (W < 520 ? 12 : 22) ? it.label.slice(0, W < 520 ? 11 : 21) + "…" : it.label;
+    s += '<text x="0" y="'+(y+bh-3)+'" font-size="11.5" fill="#3c4b4d">'+esc(label)+'</text>';
+    s += '<rect x="'+labelW+'" y="'+(y+1)+'" width="'+barMax+'" height="'+bh+'" fill="#f0f4f3" rx="4"/>';
+    s += '<rect x="'+labelW+'" y="'+(y+1)+'" width="'+bw.toFixed(1)+'" height="'+bh+'" fill="#0d7a63" rx="4"><title>'+esc(it.label)+' · '+num(it.value)+' kg</title></rect>';
+    s += '<text x="'+(W-2)+'" y="'+(y+bh-3)+'" text-anchor="end" font-size="11" fill="#64777a" font-weight="600">'+num(it.value)+'</text>';
+  });
+  s += '</svg>';
+  host.innerHTML = s;
+}
+
+/* =========================================================
+   7. shared bits
+   ========================================================= */
+function logo(size){
+  return '<div class="brand-mark" style="width:'+size+'px;height:'+size+'px">'+
+    '<svg width="'+(size*0.58)+'" height="'+(size*0.58)+'" viewBox="0 0 24 24" fill="none">'+
+      '<path d="M5 19c0-7.5 4.5-12 14-12 0 9.5-4.5 14-11 14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<path d="M5 19c1.8-4.8 5.2-8.4 10.5-10" stroke="#fff" stroke-width="2" stroke-linecap="round"/>'+
+    '</svg></div>';
+}
+function statusPill(r){
+  if (r.signed) return '<span class="pill pill-grey">'+t("stSigned")+'</span>';
+  return '<span class="pill pill-amber">'+t("stPending")+'</span>';
+}
+function catName(c){ return c === "food" ? t("catFood") : c === "oil" ? t("catOil") : t("catOther"); }
+function catColor(c){ return c === "food" ? "#0d7a63" : c === "oil" ? "#3fa58c" : "#a9cabd"; }
+
+/* =========================================================
+   8. views
+   ========================================================= */
+const app = document.getElementById("app");
+
+function renderLogin(){
+  app.innerHTML =
+  '<div class="auth"><div class="auth-card">'+
+    '<div class="brand">'+logo(38)+
+      '<div><div class="brand-name">'+t("appName")+'</div><div class="brand-sub">'+t("org")+'</div></div>'+
+    '</div>'+
+    '<h1 style="font-size:19px;margin-bottom:4px">'+t("loginTitle")+'</h1>'+
+    '<p style="margin:0 0 18px;font-size:13px;color:var(--muted)">'+t("loginSub")+'</p>'+
+    '<div class="field"><label>'+t("phoneLabel")+'</label>'+
+      '<input class="input" id="phone" value="+853 6688 1234" inputmode="tel"></div>'+
+    '<div class="field"><label>'+t("codeLabel")+'</label>'+
+      '<div class="input-row">'+
+        '<input class="input" id="code" value="8241" inputmode="numeric" maxlength="6">'+
+        '<button class="btn btn-ghost" id="sendCode" style="flex:none">'+t("getCode")+'</button>'+
+      '</div></div>'+
+    '<button class="btn btn-primary btn-block" data-act="login-supplier" style="margin-top:6px;height:42px">'+t("loginBtn")+'</button>'+
+    '<div class="divider"><span>'+t("orDivider")+'</span></div>'+
+    '<button class="btn btn-ghost btn-block" data-act="login-admin" style="height:42px">'+t("adminDemo")+'</button>'+
+    '<p class="tiny">'+t("forgot")+'</p>'+
+    '<p class="tiny" style="margin-top:6px;color:var(--faint);opacity:.85">'+t("demoNote")+'</p>'+
+  '</div></div>';
+
+  const send = document.getElementById("sendCode");
+  if (send) send.addEventListener("click", function(){
+    send.textContent = lang === "zh" ? "已發送" : "Sent";
+    send.disabled = true;
+    setTimeout(function(){ send.textContent = t("getCode"); send.disabled = false; }, 2600);
+  });
+}
+
+function topbar(){
+  const isSup = state.role === "supplier";
+  const sup = SUPPLIERS.find(function(s){ return s.id === state.sid; });
+  const title = isSup ? (lang === "zh" ? sup.zh : sup.en) : (lang === "zh" ? "項目管理處" : "Project Office");
+  const role = isSup ? t("roleSupplier") : t("roleAdmin");
+  return '<header class="topbar no-print"><div class="wrap topbar-in">'+
+    logo(34)+
+    '<div class="who"><strong>'+esc(title)+'</strong><span>'+role+'</span></div>'+
+    '<div class="spacer"></div>'+
+    '<span class="pill pill-grey" style="font-size:10.5px;letter-spacing:.06em">'+t("demoBadge")+'</span>'+
+    '<button class="btn btn-ghost btn-sm" data-act="lang">'+(lang === "zh" ? "EN" : "繁")+'</button>'+
+    '<button class="btn btn-ghost btn-sm" data-act="logout">'+t("logout")+'</button>'+
+  '</div></header>';
+}
+
+function filterBar(){
+  const presets = [
+    ["thisMonth", t("pThisMonth")], ["lastMonth", t("pLastMonth")],
+    ["d7", t("p7")], ["d30", t("p30")]
+  ];
+  return '<div class="card filters no-print">'+
+    '<div class="seg">'+presets.map(function(p){
+      return '<button data-act="preset" data-preset="'+p[0]+'" aria-pressed="'+(state.preset===p[0])+'">'+p[1]+'</button>';
+    }).join("")+'</div>'+
+    '<div class="sep"></div>'+
+    '<input class="date-in" type="date" id="from" value="'+iso(state.from)+'" aria-label="'+t("from")+'">'+
+    '<span style="font-size:12.5px;color:var(--muted)">'+t("to")+'</span>'+
+    '<input class="date-in" type="date" id="to" value="'+iso(state.to)+'" aria-label="'+t("to")+'">'+
+    '<button class="btn btn-ghost btn-sm" data-act="apply">'+t("apply")+'</button>'+
+    '<div class="grow"></div>'+
+    '<button class="btn btn-ghost btn-sm" data-act="csv">'+t("exportCsv")+'</button>'+
+    '<button class="btn btn-ghost btn-sm" data-act="print">'+t("print")+'</button>'+
+  '</div>';
+}
+
+function kpiBox(label, value, unit, foot, delta){
+  let d = "";
+  if (delta !== undefined && delta !== null){
+    const cls = delta > 0.05 ? "up" : delta < -0.05 ? "down" : "flat";
+    const arrow = delta > 0.05 ? "▲" : delta < -0.05 ? "▼" : "—";
+    d = '<div class="delta '+cls+'">'+arrow+' '+pct(delta)+' <span style="color:var(--faint);font-weight:500">'+t("kVsPrev")+'</span></div>';
+  }
+  return '<div class="card kpi"><div class="label">'+label+'</div>'+
+    '<div class="value">'+value+(unit?'<small>'+unit+'</small>':'')+'</div>'+
+    (d || (foot ? '<div class="foot">'+foot+'</div>' : ''))+
+  '</div>';
+}
+
+function supplierView(){
+  const from = state.from, to = state.to;
+  const list = supplierRecords(state.sid, from, to);
+  const s = sums(list);
+  const lenDays = Math.max(1, Math.round((to - from) / DAY) + 1);
+  const prevTo = addDays(from, -1);
+  const prevFrom = addDays(prevTo, -(lenDays - 1));
+  const prev = sums(supplierRecords(state.sid, prevFrom, prevTo));
+  const delta = prev.total > 0 ? ((s.total - prev.total) / prev.total) * 100 : null;
+
+  let series = dailySeries(list, from, to);
+  let weekly = false;
+  if (series.length > 62){ series = aggregateWeekly(series); weekly = true; }
+
+  const rows = list.slice((state.page-1)*state.pageSize, state.page*state.pageSize);
+
+  return topbar()+
+  '<main><div class="wrap">'+
+    '<div class="page-head">'+
+      '<div><h1>'+t("supTitle")+'</h1><p>'+t("supSub")+'</p></div>'+
+      '<div class="spacer"></div>'+
+      '<span class="pill">'+fmtZh(from)+' – '+fmtZh(to)+'</span>'+
+    '</div>'+
+
+    '<div class="grid grid-kpi">'+
+      kpiBox(t("kTotal"), num(s.total), t("kTotalUnit"), null, delta)+
+      kpiBox(t("kDaily"), num(s.total / lenDays), t("kTotalUnit"), t("perDay")+' '+(s.count/lenDays).toFixed(1)+' '+t("kRecords"))+
+      kpiBox(t("kCollections"), num(s.count), "", t("kAvgPer")+' '+num(s.count ? s.total/s.count : 0)+' kg')+
+      kpiBox(t("kPending"), num(s.pending), t("kRecords"), s.pending ? '' : t("stSigned"))+
+    '</div>'+
+
+    filterBar()+
+
+    '<div class="card card-pad" style="margin-bottom:14px">'+
+      '<div class="card-head">'+
+        '<h2>'+t("chartTitle")+'</h2>'+
+        '<span class="sub">'+t("chartSub")+'</span>'+
+        '<div class="legend">'+
+          '<span><i class="dot" style="background:'+catColor("food")+'"></i>'+t("legFood")+'</span>'+
+          '<span><i class="dot" style="background:'+catColor("oil")+'"></i>'+t("legOil")+'</span>'+
+          '<span><i class="dot" style="background:'+catColor("other")+'"></i>'+t("legOther")+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="chart" id="chart"></div>'+
+    '</div>'+
+
+    '<div class="card">'+
+      '<div class="card-pad" style="padding-bottom:12px">'+
+        '<div class="card-head"><h2>'+t("tableTitle")+'</h2><span class="sub">'+t("tableSub")+'</span></div>'+
+      '</div>'+
+      '<div class="table-wrap">'+
+        '<table><thead><tr>'+
+          '<th>'+t("colDate")+'</th><th>'+t("colTime")+'</th><th>'+t("colPoint")+'</th>'+
+          '<th>'+t("colCat")+'</th><th class="num">'+t("colWeight")+'</th>'+
+          '<th>'+t("colVehicle")+'</th><th>'+t("colFacility")+'</th>'+
+          '<th>'+t("colStatus")+'</th><th>'+t("colRef")+'</th>'+
+        '</tr></thead><tbody>'+
+        (rows.length ? rows.map(function(r){
+          return '<tr>'+
+            '<td>'+iso(r.date)+'</td>'+
+            '<td class="mono">'+String(r.hh).padStart(2,"0")+':'+String(r.mm).padStart(2,"0")+'</td>'+
+            '<td>'+esc(r.point)+'</td>'+
+            '<td><span style="display:inline-flex;align-items:center;gap:6px"><i class="dot" style="background:'+catColor(r.cat)+'"></i>'+catName(r.cat)+'</span></td>'+
+            '<td class="num"><strong>'+num(r.w)+'</strong></td>'+
+            '<td class="mono">'+esc(r.vehicle)+'</td>'+
+            '<td>'+(lang==="zh"?esc(r.facility.zh):esc(r.facility.en))+'</td>'+
+            '<td>'+statusPill(r)+'</td>'+
+            '<td class="mono">'+esc(r.id)+'</td>'+
+          '</tr>';
+        }).join("") : '<tr><td colspan="9"><div class="empty">'+t("empty")+'<br><span style="font-size:12px">'+t("emptyHint")+'</span></div></td></tr>')+
+        '</tbody></table>'+
+      '</div>'+
+      pager(list.length)+
+    '</div>'+
+  '</div></main>'+
+  footerHTML();
+}
+
+function pager(total){
+  const pages = Math.max(1, Math.ceil(total / state.pageSize));
+  const a = total ? (state.page-1)*state.pageSize + 1 : 0;
+  const b = Math.min(total, state.page*state.pageSize);
+  return '<div class="pager no-print">'+
+    '<span class="info">'+t("showing", {a:a, b:b, n:total})+'</span>'+
+    '<div class="grow"></div>'+
+    '<button class="btn btn-ghost btn-sm" data-act="prev" '+(state.page<=1?'disabled':'')+'>'+t("prev")+'</button>'+
+    '<span class="info" style="font-variant-numeric:tabular-nums">'+state.page+' / '+pages+'</span>'+
+    '<button class="btn btn-ghost btn-sm" data-act="next" '+(state.page>=pages?'disabled':'')+'>'+t("next")+'</button>'+
+  '</div>';
+}
+
+function adminView(){
+  const from = state.from, to = state.to;
+  const lenDays = Math.max(1, Math.round((to - from) / DAY) + 1);
+  const prevTo = addDays(from, -1);
+  const prevFrom = addDays(prevTo, -(lenDays - 1));
+
+  const rows = SUPPLIERS.map(function(s){
+    const cur = sums(supplierRecords(s.id, from, to));
+    const pre = sums(supplierRecords(s.id, prevFrom, prevTo));
+    const last = lastCollection(s.id);
+    const stale = last && (TODAY - last) > 7 * DAY;
+    return {s:s, cur:cur, pre:pre, last:last, stale:stale,
+      delta: pre.total > 0 ? ((cur.total - pre.total) / pre.total) * 100 : null};
+  }).sort(function(a,b){ return b.cur.total - a.cur.total; });
+
+  const grand = rows.reduce(function(a,r){ return a + r.cur.total; }, 0);
+  const grandPrev = rows.reduce(function(a,r){ return a + r.pre.total; }, 0);
+  const pend = rows.reduce(function(a,r){ return a + r.cur.pending; }, 0);
+  const signed = rows.reduce(function(a,r){ return a + (r.cur.count - r.cur.pending); }, 0);
+  const totalCount = rows.reduce(function(a,r){ return a + r.cur.count; }, 0);
+  const gDelta = grandPrev > 0 ? ((grand - grandPrev)/grandPrev)*100 : null;
+
+  const top = rows.slice(0,10).map(function(r){
+    return {label: lang==="zh" ? r.s.zh : r.s.en, value: r.cur.total};
+  });
+
+  return topbar()+
+  '<main><div class="wrap">'+
+    '<div class="page-head">'+
+      '<div><h1>'+t("adminTitle")+'</h1><p>'+t("adminSub")+'</p></div>'+
+      '<div class="spacer"></div>'+
+      '<span class="pill">'+fmtZh(from)+' – '+fmtZh(to)+'</span>'+
+    '</div>'+
+
+    '<div class="grid grid-kpi">'+
+      kpiBox(t("colSuppliers"), num(SUPPLIERS.length), "", t("kOfSuppliers"))+
+      kpiBox(t("kMonth"), num(grand), t("kTotalUnit"), null, gDelta)+
+      kpiBox(t("kCollections"), num(totalCount), t("kRecords"), t("kAvgPer")+' '+num(totalCount?grand/totalCount:0)+' kg')+
+      kpiBox(t("kSubmitted"), totalCount ? ((signed/totalCount)*100).toFixed(1)+"%" : "—", "", t("stPending")+': '+num(pend))+
+    '</div>'+
+
+    filterBar()+
+
+    '<div class="card card-pad" style="margin-bottom:14px">'+
+      '<div class="card-head"><h2>'+t("adminChartTitle")+'</h2><span class="sub">'+t("adminChartSub")+'</span></div>'+
+      '<div class="chart" id="chart"></div>'+
+    '</div>'+
+
+    '<div class="card">'+
+      '<div class="card-pad" style="padding-bottom:12px">'+
+        '<div class="card-head"><h2>'+t("adminTableTitle")+'</h2><span class="sub">'+t("tableSub")+'</span></div>'+
+      '</div>'+
+      '<div class="table-wrap">'+
+        '<table><thead><tr>'+
+          '<th>'+t("colSupplier")+'</th><th>'+t("colLicence")+'</th><th>'+t("colDistrict")+'</th>'+
+          '<th class="num">'+t("colThisMonth")+'</th><th class="num">'+t("colPrev")+'</th>'+
+          '<th class="num">'+t("colChange")+'</th><th>'+t("colLast")+'</th><th>'+t("colStatus")+'</th>'+
+        '</tr></thead><tbody>'+
+        rows.map(function(r){
+          const dcls = r.delta === null ? "flat" : r.delta > 0.05 ? "up" : r.delta < -0.05 ? "down" : "flat";
+          const darrow = r.delta === null ? "" : r.delta > 0.05 ? "▲ " : r.delta < -0.05 ? "▼ " : "— ";
+          return '<tr>'+
+            '<td><strong>'+(lang==="zh"?esc(r.s.zh):esc(r.s.en))+'</strong></td>'+
+            '<td class="mono">'+esc(r.s.licence)+'</td>'+
+            '<td>'+esc(r.s.district)+'</td>'+
+            '<td class="num"><strong>'+num(r.cur.total)+'</strong></td>'+
+            '<td class="num mono">'+num(r.pre.total)+'</td>'+
+            '<td class="num"><span class="delta '+dcls+'" style="margin:0">'+darrow+(r.delta===null?"—":pct(r.delta))+'</span></td>'+
+            '<td class="mono">'+(r.last?iso(r.last):"—")+'</td>'+
+            '<td>'+(r.stale ? '<span class="pill pill-red">'+t("stMissing")+'</span>' : (r.cur.pending ? '<span class="pill pill-amber">'+t("stPending")+'</span>' : '<span class="pill pill-grey">'+t("stSigned")+'</span>'))+'</td>'+
+          '</tr>';
+        }).join("")+
+        '</tbody></table>'+
+      '</div>'+
+    '</div>'+
+  '</div></main>'+
+  footerHTML();
+}
+
+function footerHTML(){
+  return '<footer><div class="wrap foot-in">'+
+    '<span class="clause">'+t("footerClause")+'</span>'+
+    '<span>'+t("footerNote")+'</span>'+
+    '<div class="spacer"></div>'+
+    '<span>'+t("footerBuilt")+'</span>'+
+  '</div></footer>';
+}
+
+function renderApp(){
+  app.innerHTML = state.role === "admin" ? adminView() : supplierView();
+  state.page = Math.min(state.page, Math.max(1, Math.ceil(currentList().length / state.pageSize)) || 1);
+  const host = document.getElementById("chart");
+  if (host){
+    if (state.role === "admin"){
+      const from = state.from, to = state.to;
+      const items = SUPPLIERS.map(function(s){
+        return {label: lang==="zh"?s.zh:s.en, value: sums(supplierRecords(s.id, from, to)).total};
+      }).sort(function(a,b){ return b.value - a.value; }).slice(0,10);
+      drawHorizontalBars(host, items);
+    } else {
+      const list = supplierRecords(state.sid, state.from, state.to);
+      let series = dailySeries(list, state.from, state.to);
+      let weekly = false;
+      if (series.length > 62){ series = aggregateWeekly(series); weekly = true; }
+      drawStackedBars(host, series, weekly);
+    }
+  }
+}
+
+function currentList(){
+  return supplierRecords(state.sid, state.from, state.to);
+}
+
+/* =========================================================
+   9. actions
+   ========================================================= */
+function setPreset(p){
+  const now = TODAY;
+  state.preset = p;
+  if (p === "thisMonth"){ state.from = startOfMonth(now); state.to = now; }
+  else if (p === "lastMonth"){ state.from = startOfMonth(addDays(startOfMonth(now),-1)); state.to = endOfMonth(state.from); }
+  else if (p === "d7"){ state.from = addDays(now, -6); state.to = now; }
+  else if (p === "d30"){ state.from = addDays(now, -29); state.to = now; }
+  state.page = 1;
+  renderApp();
+}
+
+function exportCsv(){
+  const list = state.role === "admin" ? RECORDS : currentList();
+  const head = ["ref","date","time","supplier","point","category","weight_kg","vehicle","facility","signed"];
+  const lines = [head.join(",")];
+  list.forEach(function(r){
+    const s = SUPPLIERS.find(function(x){ return x.id === r.sid; });
+    lines.push([
+      r.id, iso(r.date), String(r.hh).padStart(2,"0")+":"+String(r.mm).padStart(2,"0"),
+      '"'+(lang==="zh"?s.zh:s.en)+'"', '"'+r.point+'"', catName(r.cat), r.w,
+      r.vehicle, '"'+(lang==="zh"?r.facility.zh:r.facility.en)+'"', r.signed?1:0
+    ].join(","));
+  });
+  const blob = new Blob(["\uFEFF"+lines.join("\r\n")], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "food-waste-" + iso(state.from) + "_" + iso(state.to) + ".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
+}
+
+function go(delta){
+  const pages = Math.max(1, Math.ceil(currentList().length / state.pageSize));
+  const next = Math.min(pages, Math.max(1, state.page + delta));
+  if (next !== state.page){ state.page = next; renderApp(); }
+}
+
+/* =========================================================
+   10. events
+   ========================================================= */
+app.addEventListener("click", function(e){
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  const act = el.dataset.act;
+
+  if (act === "login-supplier"){ state.role = "supplier"; state.sid = 1; setPreset("d30"); return; }
+  if (act === "login-admin"){ state.role = "admin"; setPreset("d30"); return; }
+  if (act === "logout"){ state.role = null; renderLogin(); return; }
+  if (act === "lang"){ lang = lang === "zh" ? "en" : "zh"; try { localStorage.setItem("fw_lang", lang); } catch (e) {} document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en"; renderApp(); return; }
+  if (act === "preset"){ setPreset(el.dataset.preset); return; }
+  if (act === "apply"){
+    const f = document.getElementById("from"), t2 = document.getElementById("to");
+    if (f && t2 && f.value && t2.value){
+      let a = parseIso(f.value), b = parseIso(t2.value);
+      if (a > b){ const tmp = a; a = b; b = tmp; }
+      state.from = a; state.to = b; state.preset = "custom"; state.page = 1;
+      renderApp();
+    }
+    return;
+  }
+  if (act === "csv"){ exportCsv(); return; }
+  if (act === "print"){ window.print(); return; }
+  if (act === "prev"){ go(-1); return; }
+  if (act === "next"){ go(1); return; }
+});
+
+let rsz;
+window.addEventListener("resize", function(){
+  clearTimeout(rsz);
+  rsz = setTimeout(function(){ if (state.role) renderApp(); }, 180);
+});
+
+/* =========================================================
+   11. boot
+   ========================================================= */
+document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
+document.title = (lang === "zh" ? "廚餘管理平台" : "Food Waste Platform") + " · Demo";
+renderLogin();
+
+})();
+</script>
+</body>
+</html>
